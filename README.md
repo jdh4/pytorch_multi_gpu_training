@@ -10,6 +10,31 @@ True
 True
 ```
 
+```
+import os
+import torch
+import torch.distributed as dist
+from torch.nn.parallel import DistributedDataParallel as DDP
+
+n_gpus = torch.cuda.device_count()
+world_size = 4
+print(f"Number of allocated GPUs per node is {n_gpus}.", flush=True)
+
+rank = int(os.environ["SLURM_PROCID"])
+print(f"Running basic DDP example on rank {rank}.", flush=True)
+
+dist.init_process_group("nccl", rank=rank, world_size=world_size)
+print("group initialized?", dist.is_initialized(), flush=True)
+
+# following is true for 1 gpu per node
+gpu_rank = 0
+
+X = torch.tensor([[1., -1.], [1., -1.]])
+X.to(gpu_rank)
+
+dist.destroy_process_group()
+```
+
 ```bash
 #!/bin/bash
 #SBATCH --job-name=torch-test    # create a short name for your job
