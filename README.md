@@ -63,24 +63,25 @@ dist.destroy_process_group()
 #!/bin/bash
 #SBATCH --job-name=torch-test    # create a short name for your job
 #SBATCH --nodes=2                # node count
-#SBATCH --ntasks-per-node=2      # total number of tasks across all nodes
-#SBATCH --cpus-per-task=4        # cpu-cores per task (>1 if multi-threaded tasks)
+#SBATCH --ntasks-per-node=1      # total number of tasks across all nodes
+#SBATCH --cpus-per-task=1        # cpu-cores per task (>1 if multi-threaded tasks)
 #SBATCH --mem=32G                # total memory per node (4 GB per cpu-core is default)
-#SBATCH --gres=gpu:2             # number of gpus per node
-#SBATCH --time=00:05:00          # total run time limit (HH:MM:SS)
+#SBATCH --gres=gpu:1             # number of gpus per node
+#SBATCH --time=00:01:00          # total run time limit (HH:MM:SS)
 
 export MASTER_PORT=12340
-export WORLD_SIZE=4
+export WORLD_SIZE=$(($SLURM_NNODES * $SLURM_NTASKS_PER_NODE))
+echo "WORLD_SIZE="$WORLD_SIZE
 
 master_addr=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
 export MASTER_ADDR=$master_addr
 echo "MASTER_ADDR="$MASTER_ADDR
 
 module purge
-module load anaconda3/2020.11
+module load anaconda3/2021.5
 conda activate torch-env
 
-srun python myscript.py --epochs=3
+srun python myscript.py
 ```
 
 ```python
@@ -287,3 +288,15 @@ conda activate torch-env
 
 srun python myscript.py
 ```
+
+## Total number of tasks equals total number of GPUs
+
+When using DDP, the total number of tasks must equal the total number of allocated GPUs. Therefore, if `--ntasks-per-node=<N>` then you must have `--gres=gpu:<N>`. Here is a specific example:
+
+```
+#SBATCH --nodes=3
+#SBATCH --ntasks-per-node=2
+#SBATCH --gres=gpu:2
+```
+
+You should take all of the GPUs on a node before going to multiple nodes.
