@@ -10,7 +10,7 @@ True
 True
 ```
 
-```
+```bash
 #!/bin/bash
 #SBATCH --job-name=torch-test    # create a short name for your job
 #SBATCH --nodes=2                # node count
@@ -34,7 +34,7 @@ conda activate torch-env
 srun python myscript.py --epochs=3
 ```
 
-```
+```python
 from __future__ import print_function
 import argparse
 import torch
