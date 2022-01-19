@@ -71,11 +71,15 @@ dist.destroy_process_group()
 
 export MASTER_PORT=12340
 export WORLD_SIZE=$(($SLURM_NNODES * $SLURM_NTASKS_PER_NODE))
-echo "WORLD_SIZE="$WORLD_SIZE
+echo $WORLD_SIZE
 
 master_addr=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
 export MASTER_ADDR=$master_addr
 echo "MASTER_ADDR="$MASTER_ADDR
+
+gpus_per_node=$(printf ${SLURM_JOB_GPUS} | sed 's/[^0-9]*//g' | wc --chars)
+export GPUS_PER_NODE=$gpus_per_node
+echo "GPUS_PER_NODE="$GPUS_PER_NODE
 
 module purge
 module load anaconda3/2021.5
