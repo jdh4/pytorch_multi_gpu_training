@@ -71,7 +71,7 @@ dist.destroy_process_group()
 
 export MASTER_PORT=12340
 export WORLD_SIZE=$(($SLURM_NNODES * $SLURM_NTASKS_PER_NODE))
-echo $WORLD_SIZE
+echo "WORLD_SIZE="$WORLD_SIZE
 
 master_addr=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
 export MASTER_ADDR=$master_addr
