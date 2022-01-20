@@ -8,7 +8,13 @@ See the installation directions for [PyTorch](https://researchcomputing.princeto
 
 Make sure you optimize the single GPU case before going to multiple GPUs by working through the [Performance Tuning Guide](https://pytorch.org/tutorials/recipes/recipes/tuning_guide.html). You should also profile your code using [line_profiler](https://researchcomputing.princeton.edu/python-profiling) or another tools like dlprof.
 
-## Simple PyTorch Script
+## Read about DistributedDataParallel
+
+[intro](https://pytorch.org/tutorials/intermediate/ddp_tutorial.html)  
+[DDP](https://pytorch.org/docs/stable/generated/torch.nn.parallel.DistributedDataParallel.html)  
+[blog](https://github.com/pytorch/examples/blob/master/distributed/ddp/README.md)  
+
+## Simple DDP Script
 
 The following can be used for debugging:
 
