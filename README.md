@@ -276,3 +276,14 @@ When using DDP, the total number of tasks must equal the total number of allocat
 ```
 
 You should take all of the GPUs on a node before going to multiple nodes.
+
+## Local rank
+
+The indices of the GPUs on each node of your allocation begin at 0 and go to N - 1, where N is the total number of GPUs on a node. Because of this, one cannot use the `rank` as the GPU index for multinode jobs. To deal with this a local rank is used:
+
+```python
+gpus_per_node = int(os.environ["GPUS_PER_NODE"])
+local_rank = rank - gpus_per_node * (rank // gpus_per_node)
+```
+
+The `local_rank` shoud be used everywhere in your script except when initializing the DDP process group where `rank` should be used.
