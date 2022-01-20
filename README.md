@@ -305,3 +305,6 @@ if __name__ == '__main__':
     main()
 ```
 
+# TDO
+
+Need to plot loss or accuracy as a function of epochs for different choices of number of GPUs and cpus-per-task.
