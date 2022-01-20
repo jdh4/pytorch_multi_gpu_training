@@ -19,6 +19,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.distributed as dist
 from torch.nn.parallel import DistributedDataParallel as DDP
+from socket import gethostname
 
 class Net(nn.Module):
     def __init__(self):
@@ -42,8 +43,8 @@ dist.init_process_group("nccl", rank=rank, world_size=world_size)
 if rank == 0: print("group initialized?", dist.is_initialized(), flush=True)
 
 gpus_per_node = int(os.environ["GPUS_PER_NODE"])
+assert gpus_per_node == torch.cuda.device_count()
 local_rank = rank - gpus_per_node * (rank // gpus_per_node)
-
 torch.cuda.set_device(local_rank)
 
 model = Net().to(local_rank)
@@ -54,7 +55,7 @@ with torch.no_grad():
   data = torch.rand(1, 42)
   data = data.to(local_rank)
   output = ddp_model(data)
-  print(f"rank: {rank}, output: {output}")
+  print(f"host: {gethostname()}, rank: {rank}, output: {output}")
 
 dist.destroy_process_group()
 ```
