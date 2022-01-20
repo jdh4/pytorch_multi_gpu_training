@@ -286,4 +286,4 @@ gpus_per_node = int(os.environ["GPUS_PER_NODE"])
 local_rank = rank - gpus_per_node * (rank // gpus_per_node)
 ```
 
-The `local_rank` shoud be used everywhere in your script except when initializing the DDP process group where `rank` should be used.
+The `local_rank` shoud be used everywhere in your script except when initializing the DDP process group where `rank` should be used. In Python, one uses '//' to enforce integer division. For exampe, `1/2=0.5` while `1//2=0`.
