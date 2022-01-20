@@ -72,7 +72,7 @@ local_rank = rank - gpus_per_node * (rank // gpus_per_node)
 
 The `local_rank` shoud be used everywhere in your script except when initializing the DDP process group where `rank` should be used. In Python, one uses the  `//` operator for integer division. For example, `1 / 2 = 0.5` while `1 // 2 = 0`.
 
-# Slurm
+# DDP and Slurm
 
 ## Total number of tasks equals total number of GPUs
 
