@@ -63,7 +63,7 @@ dist.destroy_process_group()
 #!/bin/bash
 #SBATCH --job-name=torch-test    # create a short name for your job
 #SBATCH --nodes=2                # node count
-#SBATCH --ntasks-per-node=1      # total number of tasks across all nodes
+#SBATCH --ntasks-per-node=1      # total number of tasks per node
 #SBATCH --cpus-per-task=1        # cpu-cores per task (>1 if multi-threaded tasks)
 #SBATCH --mem=32G                # total memory per node (4 GB per cpu-core is default)
 #SBATCH --gres=gpu:1             # number of gpus per node
@@ -263,34 +263,6 @@ def main():
 
 if __name__ == '__main__':
     main()
-```
-
-
-
-```
-#!/bin/bash
-#SBATCH --job-name=myjob         # create a short name for your job
-#SBATCH --nodes=1                # node count
-#SBATCH --ntasks=2               # total number of tasks across all nodes
-#SBATCH --cpus-per-task=1        # cpu-cores per task (>1 if multi-threaded tasks)
-#SBATCH --mem-per-cpu=4G         # memory per cpu-core (4G per cpu-core is default)
-#SBATCH --time=1:00:00           # total run time limit (HH:MM:SS)
-#SBATCH --gres=gpu:2             # number of gpus per node
-#SBATCH -C a100
-
-master_addr=$(scontrol show hostnames "$SLURM_JOB_NODELIST" | head -n 1)
-echo ${master_addr}
-
-# free port on machine with rank 0
-#export MASTER_PORT=7890
-#export MASTER_ADDR=adroit-h11g2.princeton.edu
-#export MASTER_ADDR=172.21.1.130
-
-module purge
-module load anaconda3/2020.11
-conda activate torch-env
-
-srun python myscript.py
 ```
 
 ## Total number of tasks equals total number of GPUs
