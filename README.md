@@ -91,7 +91,7 @@ Below is an example Slurm script for using DDP.
 
 ```bash
 #!/bin/bash
-#SBATCH --job-name=torch-test    # create a short name for your job
+#SBATCH --job-name=ddp-torch     # create a short name for your job
 #SBATCH --nodes=3                # node count
 #SBATCH --ntasks-per-node=2      # total number of tasks per node
 #SBATCH --cpus-per-task=8        # cpu-cores per task (>1 if multi-threaded tasks)
