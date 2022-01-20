@@ -14,6 +14,8 @@ Make sure you optimize the single GPU case before going to multiple GPUs by work
 [DDP](https://pytorch.org/docs/stable/generated/torch.nn.parallel.DistributedDataParallel.html)  
 [blog](https://github.com/pytorch/examples/blob/master/distributed/ddp/README.md)  
 
+SPMD paradigm is used. Model is copied on each GPU so want an optimized version.
+
 ## Simple DDP Script
 
 The following can be used for debugging:
