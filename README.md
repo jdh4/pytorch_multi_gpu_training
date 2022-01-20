@@ -59,15 +59,49 @@ with torch.no_grad():
 dist.destroy_process_group()
 ```
 
+
+## Local rank
+
+The indices of the GPUs on each node of your Slurm allocation begin at 0 and go to N - 1, where N is the total number of GPUs on a node. Consider the case of 2 nodes and 8 tasks with 4 GPUs per node. The process ranks will be 0, 1, 2, 3 on the first node and 4, 5, 7 on the second node while the GPU indices will be 0, 1, 2, 3 on the first and 0, 1, 2, 3 on the second. Thus, one cannot make calls such as `data.to(rank)` since this will fail on the second node where there is a mismatch between the process ranks and the GPU indices. To deal with this a local rank is introduced:
+
+```python
+rank = int(os.environ["SLURM_PROCID"])
+gpus_per_node = int(os.environ["GPUS_PER_NODE"])
+local_rank = rank - gpus_per_node * (rank // gpus_per_node)
+```
+
+The `local_rank` shoud be used everywhere in your script except when initializing the DDP process group where `rank` should be used. In Python, one uses the  `//` operator for integer division. For example, `1 / 2 = 0.5` while `1 // 2 = 0`.
+
+# Slurm
+
+## Total number of tasks equals total number of GPUs
+
+When using DDP, the total number of tasks must equal the total number of allocated GPUs. Therefore, if `--ntasks-per-node=<N>` then you must have `--gres=gpu:<N>`. Here is a specific example:
+
+```
+#SBATCH --nodes=3
+#SBATCH --ntasks-per-node=2
+#SBATCH --gres=gpu:2
+```
+
+You should take all of the GPUs on a node before going to multiple nodes. Never do one GPU per node for multinode jobs.
+
+## Slurm Script
+
+Below is an example Slurm script for using DDP. 
+
 ```bash
 #!/bin/bash
 #SBATCH --job-name=torch-test    # create a short name for your job
-#SBATCH --nodes=2                # node count
-#SBATCH --ntasks-per-node=1      # total number of tasks per node
-#SBATCH --cpus-per-task=1        # cpu-cores per task (>1 if multi-threaded tasks)
+#SBATCH --nodes=3                # node count
+#SBATCH --ntasks-per-node=2      # total number of tasks per node
+#SBATCH --cpus-per-task=8        # cpu-cores per task (>1 if multi-threaded tasks)
 #SBATCH --mem=32G                # total memory per node (4 GB per cpu-core is default)
-#SBATCH --gres=gpu:1             # number of gpus per node
+#SBATCH --gres=gpu:2             # number of gpus per node
 #SBATCH --time=00:01:00          # total run time limit (HH:MM:SS)
+#SBATCH --mail-type=begin        # send email when job begins
+#SBATCH --mail-type=end          # send email when job ends
+#SBATCH --mail-user=<YourNetID>@princeton.edu
 
 export MASTER_PORT=12340
 export WORLD_SIZE=$(($SLURM_NNODES * $SLURM_NTASKS_PER_NODE))
@@ -87,6 +121,8 @@ conda activate torch-env
 
 srun python myscript.py
 ```
+
+The script above uses 2 nodes with 2 tasks per node and therefore 2 GPUs per node. This yields a total of 4 processes and each proces can use 8 CPU-cores for data loading.
 
 ```python
 from __future__ import print_function
@@ -265,26 +301,3 @@ if __name__ == '__main__':
     main()
 ```
 
-## Total number of tasks equals total number of GPUs
-
-When using DDP, the total number of tasks must equal the total number of allocated GPUs. Therefore, if `--ntasks-per-node=<N>` then you must have `--gres=gpu:<N>`. Here is a specific example:
-
-```
-#SBATCH --nodes=3
-#SBATCH --ntasks-per-node=2
-#SBATCH --gres=gpu:2
-```
-
-You should take all of the GPUs on a node before going to multiple nodes.
-
-## Local rank
-
-The indices of the GPUs on each node of your Slurm allocation begin at 0 and go to N - 1, where N is the total number of GPUs on a node. Consider the case of 2 nodes and 8 tasks with 4 GPUs per node. The process ranks will be 0, 1, 2, 3 on the first node and 4, 5, 7 on the second node while the GPU indices will be 0, 1, 2, 3 on the first and 0, 1, 2, 3 on the second. Thus, one cannot make calls such as `data.to(rank)` since this will fail on the second node where there is a mismatch between the process ranks and the GPU indices. To deal with this a local rank is introduced:
-
-```python
-rank = int(os.environ["SLURM_PROCID"])
-gpus_per_node = int(os.environ["GPUS_PER_NODE"])
-local_rank = rank - gpus_per_node * (rank // gpus_per_node)
-```
-
-The `local_rank` shoud be used everywhere in your script except when initializing the DDP process group where `rank` should be used. In Python, one uses the  `//` operator for integer division. For example, `1 / 2 = 0.5` while `1 // 2 = 0`.
