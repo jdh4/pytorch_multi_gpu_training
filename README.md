@@ -41,8 +41,8 @@ print(f"Running basic DDP example on rank {rank}.", flush=True)
 dist.init_process_group("nccl", rank=rank, world_size=world_size)
 if rank == 0: print("group initialized?", dist.is_initialized(), flush=True)
 
-# following is true for 1 gpu per node
-local_rank = 0
+gpus_per_node = int(os.environ["GPUS_PER_NODE"])
+local_rank = rank - gpus_per_node * (rank // gpus_per_node)
 
 torch.cuda.set_device(local_rank)
 
