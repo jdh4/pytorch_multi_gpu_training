@@ -76,10 +76,9 @@ The `local_rank` shoud be used everywhere in your script except when initializin
 
 ## Total number of tasks equals total number of GPUs
 
-When using DDP, the total number of tasks must equal the total number of allocated GPUs. Therefore, if `--ntasks-per-node=<N>` then you must have `--gres=gpu:<N>`. Here is a specific example:
+When using DDP, the total number of tasks must equal the total number of allocated GPUs. Therefore, if `--ntasks-per-node=<N>` then you must have `--gres=gpu:<N>`. Here is an example:
 
 ```
-#SBATCH --nodes=3
 #SBATCH --ntasks-per-node=2
 #SBATCH --gres=gpu:2
 ```
