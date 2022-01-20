@@ -63,7 +63,7 @@ dist.destroy_process_group()
 
 ## Local rank
 
-The indices of the GPUs on each node of your Slurm allocation begin at 0 and go to N - 1, where N is the total number of GPUs on a node. Consider the case of 2 nodes and 8 tasks with 4 GPUs per node. The process ranks will be 0, 1, 2, 3 on the first node and 4, 5, 7 on the second node while the GPU indices will be 0, 1, 2, 3 on the first and 0, 1, 2, 3 on the second. Thus, one cannot make calls such as `data.to(rank)` since this will fail on the second node where there is a mismatch between the process ranks and the GPU indices. To deal with this a local rank is introduced:
+The indices of the GPUs on each node of your Slurm allocation begin at 0 and end at N - 1, where N is the total number of GPUs in your allocation on each node. Consider the case of 2 nodes and 8 tasks with 4 GPUs per node. The process ranks will be 0, 1, 2, 3 on the first node and 4, 5, 7 on the second node while the GPU indices will be 0, 1, 2, 3 on the first and 0, 1, 2, 3 on the second. Thus, one cannot make calls such as `data.to(rank)` since this will fail on the second node where there is a mismatch between the process ranks and the GPU indices. To deal with this a local rank is introduced:
 
 ```python
 rank = int(os.environ["SLURM_PROCID"])
@@ -127,7 +127,9 @@ conda activate torch-env
 srun python myscript.py
 ```
 
-The script above uses 3 nodes with 2 tasks per node and therefore 2 GPUs per node. This yields a total of 4 processes and each proces can use 8 CPU-cores for data loading. Make sure your code can efficiency use 3 nodes since the queue time will be substantial for such a case. You might be better off using 1 or 2 nodes per job.
+The script above uses 3 nodes with 2 tasks per node and therefore 2 GPUs per node. This yields a total of 4 processes and each process can use 8 CPU-cores for data loading. Make sure your code can efficiency use 3 nodes since the queue time will be substantial for such a case. You might be better off using 1 or 2 nodes per job.
+
+## Full script
 
 ```python
 from __future__ import print_function
