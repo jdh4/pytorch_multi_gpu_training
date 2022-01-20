@@ -28,18 +28,15 @@ class Net(nn.Module):
         output = F.log_softmax(x, dim=1)
         return output
 
-n_gpus = torch.cuda.device_count()
 world_size = int(os.environ["WORLD_SIZE"])
-print(f"Number of allocated GPUs per node is {n_gpus}.", flush=True)
-
 rank = int(os.environ["SLURM_PROCID"])
-print(f"Running basic DDP example on rank {rank}.", flush=True)
-
-dist.init_process_group("nccl", rank=rank, world_size=world_size)
-if rank == 0: print("group initialized?", dist.is_initialized(), flush=True)
-
 gpus_per_node = int(os.environ["GPUS_PER_NODE"])
 assert gpus_per_node == torch.cuda.device_count()
+print(f"Hello from rank {rank} on {gethostname()} with {gpus_per_node} GPUs per node.", flush=True)
+
+dist.init_process_group("nccl", rank=rank, world_size=world_size)
+if rank == 0: print(f"Group initialized? {dist.is_initialized()}", flush=True)
+
 local_rank = rank - gpus_per_node * (rank // gpus_per_node)
 torch.cuda.set_device(local_rank)
 
