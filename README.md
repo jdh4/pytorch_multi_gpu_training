@@ -121,7 +121,7 @@ conda activate torch-env
 srun python myscript.py
 ```
 
-The script above uses 2 nodes with 2 tasks per node and therefore 2 GPUs per node. This yields a total of 4 processes and each proces can use 8 CPU-cores for data loading.
+The script above uses 3 nodes with 2 tasks per node and therefore 2 GPUs per node. This yields a total of 4 processes and each proces can use 8 CPU-cores for data loading. Make sure your code can efficiency use 3 nodes since the queue time will be substantial for such a case. You might be better off using 1 or 2 nodes per job.
 
 ```python
 from __future__ import print_function
