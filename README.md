@@ -1,14 +1,10 @@
-# pytorch_multi_gpu_training
+# Multi-GPU Training with PyTorch
 
-```
->>> import torch
-# next line in blocking until all processes join
->>> torch.distributed.init_process_group("nccl", init_method='file:///scratch/network/jdh4/sharedfile', rank=0, world_size=1)
->>> torch.distributed.is_initialized()
-True
->>> torch.distributed.is_initialized()
-True
-```
+## Optimizing the Single GPU Case
+
+Make sure you optimize the single GPU case before going to multiple GPUs.
+
+## Simple PyTorch Script
 
 The following can be used for debugging:
 
@@ -311,3 +307,13 @@ if __name__ == '__main__':
 # TDO
 
 Need to plot loss or accuracy as a function of epochs for different choices of number of GPUs and cpus-per-task.
+
+```
+>>> import torch
+# next line in blocking until all processes join
+>>> torch.distributed.init_process_group("nccl", init_method='file:///scratch/network/jdh4/sharedfile', rank=0, world_size=1)
+>>> torch.distributed.is_initialized()
+True
+>>> torch.distributed.is_initialized()
+True
+```
