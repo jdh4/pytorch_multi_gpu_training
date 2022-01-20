@@ -93,7 +93,7 @@ You should take all of the GPUs on a node before going to multiple nodes. Never 
 
 ## Slurm Script
 
-Below is an example Slurm script for using DDP. 
+Below is an example Slurm script for using DDP for Della (GPU) where there are 2 GPUs per node:
 
 ```bash
 #!/bin/bash
